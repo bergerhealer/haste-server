@@ -119,7 +119,7 @@ app.use(route(function(router) {
   router.get('/raw/:id', function(request, response) {
     var key = request.params.id.split('.')[0];
     var skipExpire = !!config.documents[key];
-    return documentHandler.handleRawGet(key, response, skipExpire);
+    return documentHandler.handleRawGet(key, response, skipExpire, request.headers['accept-encoding'] === 'gzip');
   });
   // add documents
   router.post('/documents', function(request, response) {
