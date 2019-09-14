@@ -7,11 +7,12 @@ var connect = require('connect');
 var route = require('connect-route');
 var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
+var compression = require('compression');
 
 var DocumentHandler = require('./lib/document_handler');
 
 // Load the configuration and set some defaults
-var config = JSON.parse(fs.readFileSync('./config.js', 'utf8'));
+var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 config.port = process.env.PORT || config.port || 7777;
 config.host = process.env.HOST || config.host || 'localhost';
 
@@ -105,6 +106,8 @@ if (config.rateLimits) {
   config.rateLimits.end = true;
   app.use(connect_rate_limit(config.rateLimits));
 }
+
+app.use(compression());
 
 // first look at API calls
 app.use(route(function(router) {
