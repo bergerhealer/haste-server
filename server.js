@@ -131,6 +131,11 @@ app.use(route(function(router) {
     var skipExpire = !!config.documents[key];
     return documentHandler.handleGet(key, response, skipExpire);
   });
+
+  router.get('/capabilities', function (request, response) {
+    response.writeHead(200, { 'content-type': 'application/json' });
+    response.end(JSON.stringify({ 'request-content-encoding': true }));
+  });
 }));
 
 // Otherwise, try to match static files
