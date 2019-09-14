@@ -5,6 +5,7 @@ var uglify = require('uglify-js');
 var winston = require('winston');
 var zlib = require('zlib');
 var route = require('connect-route');
+var connect = require('connect');
 var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
 var compression = require('compression');
