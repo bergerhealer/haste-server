@@ -3,7 +3,7 @@ var fs = require('fs');
 
 var uglify = require('uglify-js');
 var winston = require('winston');
-var connect = require('connect');
+var zlib = require('zlib');
 var route = require('connect-route');
 var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
@@ -107,7 +107,16 @@ if (config.rateLimits) {
   app.use(connect_rate_limit(config.rateLimits));
 }
 
-app.use(compression());
+app.use(function (req, res, next) {
+  if(req.get("transfer-encoding") === 'gzip') {
+    console.log(req.body);
+    zlib.gunzip(req.body, function (error, uncompressed) {
+      console.log(req.body);
+      req.body = uncompressed;
+    });
+  }
+  next();
+});
 
 // first look at API calls
 app.use(route(function(router) {
