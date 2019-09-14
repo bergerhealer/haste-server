@@ -8,7 +8,6 @@ var route = require('connect-route');
 var connect = require('connect');
 var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
-var compression = require('compression');
 
 var DocumentHandler = require('./lib/document_handler');
 
@@ -109,7 +108,7 @@ if (config.rateLimits) {
 }
 
 app.use(function (req, res, next) {
-  if(req.get("transfer-encoding") === 'gzip') {
+  if(req.headers["transfer-encoding"] === 'gzip') {
     console.log(req.body);
     zlib.gunzip(req.body, function (error, uncompressed) {
       console.log(req.body);
