@@ -107,15 +107,10 @@ if (config.rateLimits) {
   app.use(connect_rate_limit(config.rateLimits));
 }
 
-app.use(function (req, res, next) {
-  if(req.headers["transfer-encoding"] === 'gzip') {
-    console.log(req.body);
-    zlib.gunzip(req.body, function (error, uncompressed) {
-      console.log(req.body);
-      req.body = uncompressed;
-    });
-  }
-  next();
+zlib.gzip('Hello, world!', function (error, result) {
+  if (error) throw error;
+  fs.writeFileSync("test.txt", result);
+  console.log(result.toString());
 });
 
 // first look at API calls
