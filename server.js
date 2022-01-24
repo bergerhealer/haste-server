@@ -107,11 +107,11 @@ if (config.rateLimits) {
   app.use(connect_rate_limit(config.rateLimits));
 }
 
-zlib.gzip('Hello, world!', function (error, result) {
+/*zlib.gzip('Hello, world!', function (error, result) {
   if (error) throw error;
   fs.writeFileSync("test.txt", result);
   console.log(result.toString());
-});
+});*/
 
 // first look at API calls
 app.use(route(function(router) {
@@ -121,6 +121,13 @@ app.use(route(function(router) {
     var skipExpire = !!config.documents[key];
     return documentHandler.handleRawGet(key, response, skipExpire, (request.headers.hasOwnProperty('accept-encoding') && request.headers['accept-encoding'].includes('gzip')));
   });
+  router.get('/download/:id', function(request, response) {
+    var split = request.params.id.split('.');
+    var key = split[0];
+    var type = split.slice(1).join('.')
+    var skipExpire = !!config.documents[key];
+    documentHandler.handleDownload(key, type, response, skipExpire)
+  })
   // add documents
   router.post('/documents', function(request, response) {
     return documentHandler.handlePost(request, response);
@@ -134,7 +141,10 @@ app.use(route(function(router) {
 
   router.get('/capabilities', function (request, response) {
     response.writeHead(200, { 'content-type': 'application/json' });
-    response.end(JSON.stringify({ 'request-content-encoding': true }));
+    response.end(JSON.stringify({
+      'request-content-encoding': true,
+      'download': true
+    }));
   });
 }));
 
