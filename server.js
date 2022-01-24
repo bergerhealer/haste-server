@@ -116,7 +116,6 @@ if (config.rateLimits) {
 // first look at API calls
 app.use(route(function(router) {
   // get raw documents - support getting with extension
-
   router.get('/raw/:id', function(request, response) {
     var key = request.params.id.split('.')[0];
     var skipExpire = !!config.documents[key];
@@ -130,14 +129,14 @@ app.use(route(function(router) {
     documentHandler.handleDownload(key, type, response, skipExpire)
   })
   // add documents
-
   router.post('/documents', function(request, response) {
     return documentHandler.handlePost(request, response);
   });
-
   // get documents
   router.get('/documents/:id', function(request, response) {
-    return documentHandler.handleGet(request, response, config);
+    var key = request.params.id.split('.')[0];
+    var skipExpire = !!config.documents[key];
+    return documentHandler.handleGet(key, response, skipExpire);
   });
 
   router.get('/capabilities', function (request, response) {
