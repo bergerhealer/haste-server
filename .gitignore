@@ -6,3 +6,5 @@ data
 *.DS_Store
 
 .idea/
+
+static/application.min.js

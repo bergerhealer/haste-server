@@ -9,6 +9,8 @@ var connect = require('connect');
 var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
 
+var cors = require('cors');
+
 var DocumentHandler = require('./lib/document_handler');
 
 // Load the configuration and set some defaults
@@ -63,7 +65,7 @@ if (config.recompressStaticAssets) {
       var dest = item.substring(0, item.length - 3) + '.min' + item.substring(item.length - 3);
       var orig_code = fs.readFileSync('./static/' + item, 'utf8');
 
-      fs.writeFileSync('./static/' + dest, uglify.minify(orig_code).code, 'utf8');
+      fs.writeFileSync('./static/' + dest, orig_code, 'utf8');
       winston.info('compressed ' + item + ' into ' + dest);
     }
   }
@@ -100,6 +102,8 @@ var documentHandler = new DocumentHandler({
 });
 
 var app = connect();
+
+app.use(cors())
 
 // Rate limit all requests
 if (config.rateLimits) {

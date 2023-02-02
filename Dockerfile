@@ -11,4 +11,5 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s \
         echo Fail && exit 2\
     )"]
 
+EXPOSE 7777
 CMD ["npm", "start"]

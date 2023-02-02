@@ -46,6 +46,7 @@ haste_document.prototype.load = function(key, callback, lang) {
         language: high.language || lang,
         lineCount: res.data.split('\n').length
       });
+      _this.language = high.language || lang;
     },
     error: function() {
       callback(false);
@@ -98,9 +99,9 @@ var haste = function(appName, options) {
   this.options = options;
   this.configureShortcuts();
   this.configureButtons();
-  // If twitter is disabled, hide the button
-  if (!options.twitter) {
-    $('#box2 .twitter').hide();
+  // If download is disabled, hide the button
+  if (!options.download) {
+    $('#box2 .download').hide();
   }
 };
 
@@ -126,7 +127,7 @@ haste.prototype.lightKey = function() {
 
 // Show the full key
 haste.prototype.fullKey = function() {
-  this.configureKey(['new', 'duplicate', 'twitter', 'raw']);
+  this.configureKey(['new', 'duplicate', 'download', 'raw']);
 };
 
 // Set the key up for certain things to be enabled
@@ -308,14 +309,19 @@ haste.prototype.configureButtons = function() {
       }
     },
     {
-      $where: $('#box2 .twitter'),
-      label: 'Twitter',
+      $where: $('#box2 .download'),
+      label: 'Download',
       shortcut: function(evt) {
-        return _this.options.twitter && _this.doc.locked && evt.shiftKey && evt.ctrlKey && evt.keyCode == 84;
+        return _this.options.download && _this.doc.locked && evt.shiftKey && evt.ctrlKey && evt.keyCode == 68;
       },
-      shortcutDescription: 'control + shift + t',
+      shortcutDescription: 'control + shift + d',
       action: function() {
-        window.open('https://twitter.com/share?url=' + encodeURI(window.location.href));
+        let language = "txt";
+        if (_this.doc.language) {
+          language = _this.doc.language;
+        }
+        window.location.href = '/download/' + _this.doc.key + "." + language;
+        //window.open('https://twitter.com/share?url=' + encodeURI(window.location.href));
       }
     }
   ];
