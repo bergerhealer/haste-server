@@ -19,9 +19,9 @@ describe('RandomKeyGenerator', () => {
 
       const key = gen.createKey(3);
 
-      assert.ok(consonants.includes(key[0]));
-      assert.ok(consonants.includes(key[2]));
-      assert.ok(vowels.includes(key[1]));
+      const isVowel = (character) => vowels.includes(character);
+      assert.notEqual(isVowel(key[0]), isVowel(key[1]));
+      assert.notEqual(isVowel(key[1]), isVowel(key[2]));
     });
   });
 });

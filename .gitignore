@@ -4,6 +4,7 @@ node_modules
 *.swo
 data
 *.DS_Store
+compose/db
 
 .idea/
 

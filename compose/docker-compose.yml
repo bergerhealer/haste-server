@@ -1,0 +1,48 @@
+services:
+  redis:
+    container_name: haste-db
+    image: redis:7.4.1-alpine
+    restart: unless-stopped
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: local
+      options:
+        max-size: "50m"
+        max-file: "20"
+    networks:
+      - 'paste'
+    volumes:
+      - "./db:/data"
+      - "./redis.conf:/usr/local/etc/redis/redis.conf:ro"
+
+  haste:
+    container_name: haste-app
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: haste-server:local
+    restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: "50m"
+        max-file: "20"
+    ports:
+      - "127.0.0.1:7777:7777"
+    volumes:
+      - "./config.json:/app/config.json"
+      - "./data:/data"
+    networks:
+      - 'paste'
+    depends_on:
+      redis:
+        condition: service_healthy
+
+networks:
+  paste:
+    driver: bridge

@@ -19,21 +19,24 @@ config.port = process.env.PORT || config.port || 7777;
 config.host = process.env.HOST || config.host || 'localhost';
 
 // Set up the logger
-if (config.logging) {
-  try {
-    winston.remove(winston.transports.Console);
-  } catch(e) {
-    /* was not present */
-  }
-
+var transports = [new winston.transports.Console()];
+if (config.logging && config.logging.length) {
+  transports = [];
   var detail, type;
   for (var i = 0; i < config.logging.length; i++) {
-    detail = config.logging[i];
+    detail = Object.assign({}, config.logging[i]);
     type = detail.type;
     delete detail.type;
-    winston.add(winston.transports[type], detail);
+
+    if (winston.transports[type]) {
+      transports.push(new winston.transports[type](detail));
+    }
+  }
+  if (!transports.length) {
+    transports = [new winston.transports.Console()];
   }
 }
+winston.configure({ transports: transports });
 
 // build the store from the config on-demand - so that we don't load it
 // for statics
@@ -47,14 +50,10 @@ if (!config.storage.type) {
 var Store, preferredStore;
 
 if (process.env.REDISTOGO_URL && config.storage.type === 'redis') {
-  var redisClient = require('redis-url').connect(process.env.REDISTOGO_URL);
-  Store = require('./lib/document_stores/redis');
-  preferredStore = new Store(config.storage, redisClient);
+  config.storage.url = process.env.REDISTOGO_URL;
 }
-else {
-  Store = require('./lib/document_stores/' + config.storage.type);
-  preferredStore = new Store(config.storage);
-}
+Store = require('./lib/document_stores/' + config.storage.type);
+preferredStore = new Store(config.storage);
 
 // Compress the static javascript assets
 if (config.recompressStaticAssets) {
